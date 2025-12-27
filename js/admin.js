@@ -84,23 +84,27 @@ function parseJwt(token) {
 }
 
 /**
- * Show message for non-admin users
+ * Show message for non-admin users (Guest Access)
  */
 function showNonAdminMessage() {
     document.getElementById('adminLoginSection').innerHTML = `
         <h2>Welcome, ${currentUser.name}!</h2>
         <div style="text-align: center; padding: 2rem;">
             <img src="${currentUser.picture}" alt="${currentUser.name}" 
-                 style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1rem;">
+                 style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1rem; border: 2px solid var(--color-deep-orange);">
             <p style="color: var(--color-light-text); margin-bottom: 1rem;">
                 You're signed in as:<br>
                 <strong>${currentUser.email}</strong>
             </p>
-            <p style="color: var(--color-muted-text); margin-bottom: 1.5rem;">
-                This account doesn't have admin privileges.<br>
-                Admin access is restricted to authorized personnel only.
+            <p style="color: var(--color-golden-yellow); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                🎨 Guest Access
             </p>
-            <button onclick="signOutGoogle()" class="admin-btn">Sign Out</button>
+            <p style="color: var(--color-muted-text); margin-bottom: 1.5rem;">
+                You can browse the gallery and explore artworks.<br>
+                Admin features are available to authorized users only.
+            </p>
+            <button onclick="closeAdminPanel()" class="admin-btn" style="margin-right: 0.5rem;">Continue as Guest</button>
+            <button onclick="signOutGoogle()" class="signout-btn">Sign Out</button>
         </div>
     `;
     document.getElementById('adminDashboard').style.display = 'none';
@@ -145,17 +149,19 @@ function signOutGoogle() {
         <div id="g_id_onload"
              data-client_id="943518470824-iooid027tgjsgpgpovjt7cir56sspjua.apps.googleusercontent.com"
              data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
+             data-auto_prompt="false"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-itp_support="true">
         </div>
         <div class="g_id_signin"
              data-type="standard"
              data-size="large"
-             data-theme="filled_blue"
-             data-text="sign_in_with"
+             data-theme="filled_black"
+             data-text="signin_with"
              data-shape="rectangular"
              data-logo_alignment="left">
         </div>
-        <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--color-muted-text);">Admin access: kaveriprajapati123@gmail.com</p>
     `;
     
     document.getElementById('adminLoginSection').style.display = 'block';
@@ -165,7 +171,7 @@ function signOutGoogle() {
     if (typeof google !== 'undefined') {
         google.accounts.id.renderButton(
             document.querySelector('.g_id_signin'),
-            { theme: 'filled_blue', size: 'large', text: 'sign_in_with' }
+            { theme: 'filled_black', size: 'large', text: 'signin_with' }
         );
     }
     

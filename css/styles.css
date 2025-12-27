@@ -232,21 +232,22 @@ a {
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: white;
-    border: 1px solid #dadce0;
+    background: #1a1a1a;
+    border: 1px solid #333;
     border-radius: 4px;
-    color: #3c4043;
+    color: #ffffff;
     font-family: var(--font-accent);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition-smooth);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .admin-login-btn:hover {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    background: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    background: #2a2a2a;
+    border-color: #444;
 }
 
 .admin-login-btn svg {
