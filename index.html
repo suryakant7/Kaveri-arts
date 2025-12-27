@@ -33,6 +33,12 @@
                 <span></span>
                 <span></span>
             </div>
+            <button class="admin-login-btn" id="adminLoginBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                </svg>
+                Admin
+            </button>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#home" class="nav-link">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
@@ -124,7 +130,7 @@
             
             <div class="gallery-grid">
                 <!-- Gallery Item 1 -->
-                <div class="gallery-item">
+                <div class="gallery-item" data-item-id="1" data-title="Eternal Harmony" data-price="2999" data-image="">
                     <div class="gallery-frame">
                         <div class="placeholder-artwork">
                             <div class="mandala-placeholder mandala-1">
@@ -140,13 +146,15 @@
                             <div class="gallery-info">
                                 <h3>Eternal Harmony</h3>
                                 <p>Mandala Series • 2024</p>
+                                <p class="price">₹2,999</p>
+                                <button class="buy-btn" onclick="buyArtwork(1, 'Eternal Harmony', 2999)">Buy Now</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gallery Item 2 -->
-                <div class="gallery-item">
+                <div class="gallery-item" data-item-id="2" data-title="Sacred Geometry" data-price="3499" data-image="">
                     <div class="gallery-frame">
                         <div class="placeholder-artwork">
                             <div class="mandala-placeholder mandala-2">
@@ -161,13 +169,15 @@
                             <div class="gallery-info">
                                 <h3>Sacred Geometry</h3>
                                 <p>Mandala Series • 2024</p>
+                                <p class="price">₹3,499</p>
+                                <button class="buy-btn" onclick="buyArtwork(2, 'Sacred Geometry', 3499)">Buy Now</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gallery Item 3 -->
-                <div class="gallery-item">
+                <div class="gallery-item" data-item-id="3" data-title="Radiance Within" data-price="2799" data-image="">
                     <div class="gallery-frame">
                         <div class="placeholder-artwork">
                             <div class="mandala-placeholder mandala-3">
@@ -183,13 +193,15 @@
                             <div class="gallery-info">
                                 <h3>Radiance Within</h3>
                                 <p>Mandala Series • 2024</p>
+                                <p class="price">₹2,799</p>
+                                <button class="buy-btn" onclick="buyArtwork(3, 'Radiance Within', 2799)">Buy Now</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gallery Item 4 -->
-                <div class="gallery-item">
+                <div class="gallery-item" data-item-id="4" data-title="Cosmic Balance" data-price="3999" data-image="">
                     <div class="gallery-frame">
                         <div class="placeholder-artwork">
                             <div class="mandala-placeholder mandala-4">
@@ -204,13 +216,15 @@
                             <div class="gallery-info">
                                 <h3>Cosmic Balance</h3>
                                 <p>Mandala Series • 2024</p>
+                                <p class="price">₹3,999</p>
+                                <button class="buy-btn" onclick="buyArtwork(4, 'Cosmic Balance', 3999)">Buy Now</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gallery Item 5 -->
-                <div class="gallery-item">
+                <div class="gallery-item" data-item-id="5" data-title="Infinite Circles" data-price="3299" data-image="">
                     <div class="gallery-frame">
                         <div class="placeholder-artwork">
                             <div class="mandala-placeholder mandala-5">
@@ -226,13 +240,15 @@
                             <div class="gallery-info">
                                 <h3>Infinite Circles</h3>
                                 <p>Mandala Series • 2024</p>
+                                <p class="price">₹3,299</p>
+                                <button class="buy-btn" onclick="buyArtwork(5, 'Infinite Circles', 3299)">Buy Now</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gallery Item 6 -->
-                <div class="gallery-item">
+                <div class="gallery-item" data-item-id="6" data-title="Trinity of Peace" data-price="2899" data-image="">
                     <div class="gallery-frame">
                         <div class="placeholder-artwork">
                             <div class="mandala-placeholder mandala-6">
@@ -247,6 +263,8 @@
                             <div class="gallery-info">
                                 <h3>Trinity of Peace</h3>
                                 <p>Mandala Series • 2024</p>
+                                <p class="price">₹2,899</p>
+                                <button class="buy-btn" onclick="buyArtwork(6, 'Trinity of Peace', 2899)">Buy Now</button>
                             </div>
                         </div>
                     </div>
@@ -638,7 +656,76 @@
         </svg>
     </button>
 
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <span class="admin-close" onclick="closeAdminPanel()">&times;</span>
+            <div id="adminLoginSection">
+                <h2>Admin Login</h2>
+                <p>Sign in with your authorized Google account</p>
+                <button id="googleSignInBtn" class="google-signin-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+            </div>
+            <div id="adminDashboard" style="display:none;">
+                <h2>Admin Dashboard</h2>
+                <div class="admin-user-info">
+                    <img id="adminUserPhoto" src="" alt="Admin" class="admin-user-photo">
+                    <span id="adminUserName"></span>
+                    <button onclick="signOutAdmin()" class="signout-btn">Sign Out</button>
+                </div>
+                <div class="admin-tabs">
+                    <button class="admin-tab-btn active" onclick="showAdminTab('gallery')">Manage Gallery</button>
+                    <button class="admin-tab-btn" onclick="showAdminTab('content')">Edit Content</button>
+                </div>
+                <div id="adminGalleryTab" class="admin-tab-content">
+                    <h3>Add New Artwork</h3>
+                    <div class="admin-form">
+                        <input type="text" id="newArtTitle" placeholder="Artwork Title">
+                        <input type="text" id="newArtImage" placeholder="Google Drive Image Link">
+                        <input type="number" id="newArtPrice" placeholder="Price (₹)">
+                        <textarea id="newArtDesc" placeholder="Description"></textarea>
+                        <button onclick="addNewArtwork()" class="admin-btn">Add Artwork</button>
+                    </div>
+                    <h3>Existing Artworks</h3>
+                    <div id="existingArtworks" class="existing-artworks"></div>
+                </div>
+                <div id="adminContentTab" class="admin-tab-content" style="display:none;">
+                    <h3>Edit Page Content</h3>
+                    <div class="admin-form">
+                        <label>Hero Tagline:</label>
+                        <input type="text" id="editHeroTagline" placeholder="Mandala Art • Creativity • Culture">
+                        <label>About Text:</label>
+                        <textarea id="editAboutText" rows="5"></textarea>
+                        <button onclick="saveContentChanges()" class="admin-btn">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" class="image-preview-modal">
+        <span class="preview-close" onclick="closeImagePreview()">&times;</span>
+        <img id="previewImage" class="preview-image" src="" alt="Preview">
+        <div class="preview-controls">
+            <button onclick="zoomIn()" class="zoom-btn">+</button>
+            <button onclick="zoomOut()" class="zoom-btn">-</button>
+            <button onclick="resetZoom()" class="zoom-btn">Reset</button>
+        </div>
+    </div>
+
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
     <!-- JavaScript -->
     <script src="js/script.js"></script>
+    <script src="js/admin.js"></script>
 </body>
 </html>
