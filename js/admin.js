@@ -7,7 +7,6 @@
 
 // Configuration
 const AUTHORIZED_EMAIL = 'kaveriprajapati123@gmail.com';
-const GOOGLE_CLIENT_ID = ''; // Add your Google OAuth Client ID here
 
 // State
 let currentUser = null;
@@ -19,32 +18,20 @@ let currentZoom = 1;
 // ==========================================
 
 /**
- * Initialize Google Sign-In
- */
-function initializeGoogleSignIn() {
-    // Note: You need to set up Google OAuth 2.0 credentials
-    // Visit: https://console.cloud.google.com/
-    
-    if (typeof google !== 'undefined') {
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleGoogleSignIn
-        });
-    }
-}
-
-/**
- * Open admin panel
+ * Open Google Login modal
  */
 document.getElementById('adminLoginBtn').addEventListener('click', () => {
     document.getElementById('adminModal').style.display = 'block';
     
     // Check if user is already logged in
-    const savedUser = localStorage.getItem('adminUser');
+    const savedUser = sessionStorage.getItem('googleUser');
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
         if (currentUser.email === AUTHORIZED_EMAIL) {
             showAdminDashboard();
+        } else {
+            // Logged in but not admin
+            showNonAdminMessage();
         }
     }
 });
@@ -57,29 +44,67 @@ function closeAdminPanel() {
 }
 
 /**
- * Handle Google Sign-In (Dummy implementation for now)
+ * Handle Google Sign-In Response (Real OAuth)
+ * This function is called by Google's Sign-In button
  */
-document.getElementById('googleSignInBtn').addEventListener('click', () => {
-    // Dummy login for demo purposes
-    // Replace this with actual Google OAuth flow
+function handleCredentialResponse(response) {
+    // Decode the JWT token to get user info
+    const userObject = parseJwt(response.credential);
     
-    const email = prompt('Enter email for demo (use: kaveriprajapati123@gmail.com):');
+    currentUser = {
+        email: userObject.email,
+        name: userObject.name,
+        picture: userObject.picture,
+        sub: userObject.sub
+    };
     
-    if (email === AUTHORIZED_EMAIL) {
-        currentUser = {
-            email: email,
-            name: 'Kaveri Prajapati',
-            picture: 'https://via.placeholder.com/150'
-        };
-        
-        localStorage.setItem('adminUser', JSON.stringify(currentUser));
+    // Store in sessionStorage (more secure than localStorage)
+    sessionStorage.setItem('googleUser', JSON.stringify(currentUser));
+    
+    // Check if user is authorized admin
+    if (currentUser.email === AUTHORIZED_EMAIL) {
         showAdminDashboard();
-        
-        alert('✅ Admin login successful!');
+        console.log('✅ Admin logged in:', currentUser.email);
     } else {
-        alert('❌ Unauthorized! Only ' + AUTHORIZED_EMAIL + ' can access admin panel.');
+        showNonAdminMessage();
+        console.log('❌ Unauthorized user:', currentUser.email);
     }
-});
+}
+
+/**
+ * Parse JWT token to extract user information
+ */
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+}
+
+/**
+ * Show message for non-admin users
+ */
+function showNonAdminMessage() {
+    document.getElementById('adminLoginSection').innerHTML = `
+        <h2>Welcome, ${currentUser.name}!</h2>
+        <div style="text-align: center; padding: 2rem;">
+            <img src="${currentUser.picture}" alt="${currentUser.name}" 
+                 style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1rem;">
+            <p style="color: var(--color-light-text); margin-bottom: 1rem;">
+                You're signed in as:<br>
+                <strong>${currentUser.email}</strong>
+            </p>
+            <p style="color: var(--color-muted-text); margin-bottom: 1.5rem;">
+                This account doesn't have admin privileges.<br>
+                Admin access is restricted to authorized personnel only.
+            </p>
+            <button onclick="signOutGoogle()" class="admin-btn">Sign Out</button>
+        </div>
+    `;
+    document.getElementById('adminDashboard').style.display = 'none';
+}
 
 /**
  * Show admin dashboard
@@ -103,11 +128,46 @@ function showAdminDashboard() {
  * Sign out admin
  */
 function signOutAdmin() {
+    signOutGoogle();
+}
+
+/**
+ * Sign out from Google
+ */
+function signOutGoogle() {
     currentUser = null;
-    localStorage.removeItem('adminUser');
+    sessionStorage.removeItem('googleUser');
+    
+    // Reset the modal
+    document.getElementById('adminLoginSection').innerHTML = `
+        <h2>Sign In</h2>
+        <p>Sign in with your Google account</p>
+        <div id="g_id_onload"
+             data-client_id="YOUR_GOOGLE_CLIENT_ID"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="filled_blue"
+             data-text="sign_in_with"
+             data-shape="rectangular"
+             data-logo_alignment="left">
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--color-muted-text);">Admin access: kaveriprajapati123@gmail.com</p>
+    `;
     
     document.getElementById('adminLoginSection').style.display = 'block';
     document.getElementById('adminDashboard').style.display = 'none';
+    
+    // Re-render Google button
+    if (typeof google !== 'undefined') {
+        google.accounts.id.renderButton(
+            document.querySelector('.g_id_signin'),
+            { theme: 'filled_blue', size: 'large', text: 'sign_in_with' }
+        );
+    }
     
     alert('Signed out successfully');
 }
@@ -560,7 +620,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+    
+    // Update login button text based on login state
+    const savedUser = sessionStorage.getItem('googleUser');
+    if (savedUser) {
+        const user = JSON.parse(savedUser);
+        const loginBtn = document.getElementById('adminLoginBtn');
+        if (user.email === AUTHORIZED_EMAIL) {
+            loginBtn.innerHTML = `
+                <img src="${user.picture}" alt="Admin" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 0.5rem;">
+                Admin Panel
+            `;
+        }
+    }
 });
+
+// Make handleCredentialResponse available globally for Google Sign-In
+window.handleCredentialResponse = handleCredentialResponse;
 
 // Close modals when clicking outside
 window.onclick = function(event) {
@@ -576,4 +652,4 @@ window.onclick = function(event) {
     }
 };
 
-console.log('🔐 Admin panel initialized. Click "Admin" button to login.');
+console.log('🔐 Google OAuth login initialized. Click "Google Login" to sign in.');
