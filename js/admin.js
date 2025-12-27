@@ -143,7 +143,7 @@ function signOutGoogle() {
         <h2>Sign In</h2>
         <p>Sign in with your Google account</p>
         <div id="g_id_onload"
-             data-client_id="YOUR_GOOGLE_CLIENT_ID"
+             data-client_id="943518470824-iooid027tgjsgpgpovjt7cir56sspjua.apps.googleusercontent.com"
              data-callback="handleCredentialResponse"
              data-auto_prompt="false">
         </div>
